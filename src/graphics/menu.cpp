@@ -7,7 +7,7 @@
 
 #include <GL/glew.h>
 #include <GL/glut.h>
-
+#include <cstring>
 #include <cmath>
 
 struct MeltState
@@ -454,6 +454,150 @@ void pauseMenuRender(int screenW, int screenH, float tempo)
     uiDrawStrokeText(xSub, ySub, sub, scaleSub);
 
     glDisable(GL_BLEND);
+
+    end2D();
+    glPopAttrib();
+}
+
+void gameOverRender(int w, int h, float time, const char* titulo, const char* subtitulo) {
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+
+    // 1. DESLIGA TUDO PARA LIMPAR O CAMINHO
+    glUseProgram(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_FOG);
+    glDisable(GL_CULL_FACE); // O GRANDE CULPADO ESTAVA AQUI!
+
+    // Usa a sua própria função de câmera 2D
+    begin2D(w, h);
+
+    // ==========================================
+    // 2. FILTRO DE SANGUE (Agora vai funcionar!)
+    // ==========================================
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    glColor4f(0.6f, 0.0f, 0.0f, 0.85f); // Vermelho escuro forte
+    glBegin(GL_QUADS);
+        glVertex2f(0, 0);
+        glVertex2f((float)w, 0);
+        glVertex2f((float)w, (float)h);
+        glVertex2f(0, (float)h);
+    glEnd();
+    
+    glDisable(GL_BLEND);
+
+    // ==========================================
+    // 3. TEXTOS COM SOMBRA 
+    // ========================================
+    
+    // Calcula a largura exata do TÍTULO em pixels
+    int lenTitulo = strlen(titulo);
+    int larguraTitulo = 0;
+    for (int i = 0; i < lenTitulo; i++) {
+        larguraTitulo += glutBitmapWidth(GLUT_BITMAP_TIMES_ROMAN_24, titulo[i]);
+    }
+    int xTitulo = (w - larguraTitulo) / 2; 
+    int yTitulo = h / 2 + 20;
+
+    // Desenha Sombra do Título
+    glColor3f(0.0f, 0.0f, 0.0f); 
+    glRasterPos2i(xTitulo + 2, yTitulo - 2);
+    for (int i = 0; i < lenTitulo; i++) glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, titulo[i]);
+
+    // Desenha Cor do Título
+    glColor3f(1.0f, 0.0f, 0.0f); 
+    glRasterPos2i(xTitulo, yTitulo);
+    for (int i = 0; i < lenTitulo; i++) glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, titulo[i]);
+
+    // Calcula a largura exata do SUBTÍTULO em pixels
+    int lenSub = strlen(subtitulo);
+    int larguraSub = 0;
+    for (int i = 0; i < lenSub; i++) {
+        larguraSub += glutBitmapWidth(GLUT_BITMAP_TIMES_ROMAN_24, subtitulo[i]);
+    }
+    int xSub = (w - larguraSub) / 2;
+    int ySub = h / 2 - 30; 
+
+    // Desenha Sombra do Subtítulo
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glRasterPos2i(xSub + 2, ySub - 2);
+    for (int i = 0; i < lenSub; i++) glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, subtitulo[i]);
+
+    // Desenha Cor do Subtítulo
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glRasterPos2i(xSub, ySub);
+    for (int i = 0; i < lenSub; i++) glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, subtitulo[i]);
+
+    // Restaura as configurações
+    end2D();
+    glPopAttrib();
+}
+
+void victoryRender(int w, int h, float time) {
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+
+    // Desliga 3D e luzes
+    glUseProgram(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_FOG);
+    glDisable(GL_CULL_FACE);
+
+    begin2D(w, h);
+
+    // Fundo escuro total
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.0f, 0.05f, 0.0f, 0.95f); // Um tom quase preto com um toque de verde
+    glBegin(GL_QUADS);
+        glVertex2f(0, 0);
+        glVertex2f((float)w, 0);
+        glVertex2f((float)w, (float)h);
+        glVertex2f(0, (float)h);
+    glEnd();
+    glDisable(GL_BLEND);
+
+    const char* titulo = "PROTOCOLO CONCLUIDO";
+    const char* subtitulo = "A infeccao foi contida.";
+
+    // Calcula larguras para centralizar
+    int lenTitulo = strlen(titulo);
+    int largTitulo = 0;
+    for (int i = 0; i < lenTitulo; i++) largTitulo += glutBitmapWidth(GLUT_BITMAP_TIMES_ROMAN_24, titulo[i]);
+    int xTitulo = (w - largTitulo) / 2; 
+    int yTitulo = h / 2 + 20;
+
+    int lenSub = strlen(subtitulo);
+    int largSub = 0;
+    for (int i = 0; i < lenSub; i++) largSub += glutBitmapWidth(GLUT_BITMAP_TIMES_ROMAN_24, subtitulo[i]);
+    int xSub = (w - largSub) / 2;
+    int ySub = h / 2 - 30;
+
+    // Sombra Título
+    glColor3f(0.0f, 0.0f, 0.0f); 
+    glRasterPos2i(xTitulo + 2, yTitulo - 2);
+    for (int i = 0; i < lenTitulo; i++) glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, titulo[i]);
+
+    // Cor Título (Verde)
+    glColor3f(0.0f, 0.8f, 0.0f); 
+    glRasterPos2i(xTitulo, yTitulo);
+    for (int i = 0; i < lenTitulo; i++) glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, titulo[i]);
+
+    // Sombra Subtítulo
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glRasterPos2i(xSub + 2, ySub - 2);
+    for (int i = 0; i < lenSub; i++) glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, subtitulo[i]);
+
+    // Cor Subtítulo (Branco)
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glRasterPos2i(xSub, ySub);
+    for (int i = 0; i < lenSub; i++) glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, subtitulo[i]);
 
     end2D();
     glPopAttrib();

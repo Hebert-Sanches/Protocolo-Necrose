@@ -37,6 +37,9 @@ struct GameAssets
     // shaders
     GLuint progSangue = 0;
     GLuint progLava = 0;
+    GLuint progNeblina = 0;
+    GLuint progMelt = 0;
+    GLuint progDano = 0;
 
     GLuint texSkydome = 0;
 };

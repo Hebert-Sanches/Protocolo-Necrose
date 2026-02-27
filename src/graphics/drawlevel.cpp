@@ -119,7 +119,7 @@ static void desenhaQuadChao(float x, float z, float tile, float tilesUV)
 }
 
 static void desenhaTileChao(float x, float z, const RenderAssets &r)
-{
+{   
     glUseProgram(0);
     glColor3f(1, 1, 1);
 
@@ -135,7 +135,6 @@ static void desenhaTileChao(float x, float z, const RenderAssets &r)
 static void desenhaParedePorFace(float x, float z, GLuint texParedeX, int f)
 {
     float half = TILE * 0.5f;
-    glUseProgram(0);
     glColor3f(1, 1, 1);
     glBindTexture(GL_TEXTURE_2D, texParedeX);
     float tilesX = 1.0f;
@@ -198,6 +197,7 @@ static void desenhaPortaPorFace(float x, float z, GLuint texPortaX, int f)
 {
     float half = TILE * 0.5f;
     glUseProgram(0);
+    
     glColor3f(1, 1, 1);
     glBindTexture(GL_TEXTURE_2D, texPortaX);
     
@@ -377,6 +377,7 @@ void drawLevel(const MapLoader &map, float px, float pz, float dx, float dz, con
             }
         }
     }
+    glUseProgram(0);
 }
 
 static void drawSprite(float x, float z, float w, float h, GLuint tex, float camX, float camZ)

@@ -35,10 +35,14 @@ struct RenderAssets
     GLuint texAmmo = 0;
     GLuint texCartao = 0;
 
+    GLuint progMelt = 0;
+
     GLuint texPorta = 0;
 
     GLuint progSangue = 0;
     GLuint progLava = 0;
+    GLuint progNeblina = 0;
+    GLuint progDano = 0; 
 };
 
 struct GameContext

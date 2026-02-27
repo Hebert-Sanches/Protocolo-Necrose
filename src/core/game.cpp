@@ -35,12 +35,20 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 
+// ---> CORREÇÃO 1: Declarando as variáveis globais dos Shaders aqui no topo
+static GLint locLavaTime = -1;
+static GLint locBloodTime = -1;
+static GLint locNeblinaCameraPos = -1;
+
+GLuint gProgNeblinaGlobal = 0;
+
 ParticleSystem gBloodParticles; // Criando o sistema
 
 static HudTextures gHudTex;
 static GameContext g;
 
 constexpr int MAX_MAGAZINE = 12;
+static int g_nivelAtual = 1; 
 
 // --- Assets / Level ---
 static GameAssets gAssets;
@@ -94,6 +102,8 @@ bool gameInit(const char *mapPath)
 
     gHudTex.texHudFundo = gAssets.texHudFundo;
     gHudTex.texGunHUD = gAssets.texGunHUD;
+    g.r.progMelt = gAssets.progMelt;
+    g.r.progDano = gAssets.progDano;
 
     gHudTex.texGunDefault = gAssets.texGunDefault;
     gHudTex.texGunFire1 = gAssets.texGunFire1;
@@ -117,6 +127,14 @@ bool gameInit(const char *mapPath)
 
     g.r.progSangue = gAssets.progSangue;
     g.r.progLava = gAssets.progLava;
+    g.r.progNeblina = gAssets.progNeblina;
+
+    gProgNeblinaGlobal = g.r.progNeblina;
+
+    // ---> CORREÇÃO 2: Agora as variáveis existem e podem receber os endereços!
+    locLavaTime = glGetUniformLocation(g.r.progLava, "uTime");
+    locBloodTime = glGetUniformLocation(g.r.progSangue, "uTime");
+    locNeblinaCameraPos = glGetUniformLocation(g.r.progNeblina, "cameraPos");
 
     if (!loadLevel(gLevel, mapPath, GameConfig::TILE_SIZE))
         return false;
@@ -228,14 +246,25 @@ void gameUpdate(float dt)
         }
     }
 
-    if (encostouNaPorta) {
-        if (g.player.temCartao) {
+        if (encostouNaPorta) {
+            if (g.player.temCartao) {
+                g.player.temCartao = false; 
+                g_nivelAtual++; // Avança para o próximo nível
 
-            g.player.temCartao = false; 
-            
-            loadLevel(gLevel, "maps/map2.txt", gLevel.metrics.tile);
-            
-            applySpawn(gLevel, camX, camZ); 
+            if (g_nivelAtual == 2) {
+                // Carrega o Mapa 2
+                loadLevel(gLevel, "maps/map2.txt", gLevel.metrics.tile);
+                applySpawn(gLevel, camX, camZ); 
+            } 
+            else if (g_nivelAtual == 3) {
+                // Carrega o Mapa 3
+                loadLevel(gLevel, "maps/map3.txt", gLevel.metrics.tile);
+                applySpawn(gLevel, camX, camZ); 
+            } 
+            else if (g_nivelAtual > 3) {
+                // Zerou o jogo!
+                g.state = GameState::VICTORY;
+            }
         } 
     }
 
@@ -253,12 +282,19 @@ void drawWorld3D()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    // LIGAR O 3D
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_LIGHTING);
     glEnable(GL_DEPTH_TEST);
 
-    // Configuração da Câmera
+    glEnable(GL_FOG);
+    glFogi(GL_FOG_MODE, GL_LINEAR);
+    GLfloat corNeblina[4] = {0.02f, 0.02f, 0.02f, 1.0f}; // Quase preto absoluto
+    glFogfv(GL_FOG_COLOR, corNeblina);
+    
+    // Ajuste as distâncias do terror aqui:
+    glFogf(GL_FOG_START, 3.0f);  // Lanterna ilumina bem até 3 blocos
+    glFogf(GL_FOG_END, 20.0f);   // Escuridão total a 20 blocos de distância
+
     float radYaw = yaw * 3.14159265f / 180.0f;
     float radPitch = pitch * 3.14159265f / 180.0f;
     float dirX = cosf(radPitch) * sinf(radYaw);
@@ -266,12 +302,24 @@ void drawWorld3D()
     float dirZ = -cosf(radPitch) * cosf(radYaw);
     gluLookAt(camX, camY, camZ, camX + dirX, camY + dirY, camZ + dirZ, 0.0f, 1.0f, 0.0f);
 
-    // Desenha o cenário
     setSunDirectionEachFrame();
-    //drawSkydome(camX, camY, camZ, g.r);
+
+    if (g.r.progLava > 0) {
+        glUseProgram(g.r.progLava);
+        glUniform1f(locLavaTime, g.time);
+    }
+    if (g.r.progSangue > 0) {
+        glUseProgram(g.r.progSangue);
+        glUniform1f(locBloodTime, g.time);
+    }
+    
+    glUseProgram(0); 
+
     drawLevel(gLevel.map, camX, camZ, dirX, dirZ, g.r, g.time);
     drawEntities(gLevel.enemies, gLevel.items, camX, camZ, dirX, dirZ, g.r);
-    gBloodParticles.draw(camX, camZ); // Desenha o sangue na frente de tudo
+    gBloodParticles.draw(camX, camZ); 
+    
+    glDisable(GL_FOG);
 }
 
 // FUNÇÃO PRINCIPAL DE DESENHO (REFATORADA: usa menuRender / pauseMenuRender / hudRenderAll)
@@ -294,18 +342,18 @@ void gameRender()
         // menuRender já cuida do fogo (update + render)
         menuRender(janelaW, janelaH, g.time, "PROTOCOLO: NECROSE", "Pressione ENTER para Iniciar a Infeccao", g.r);
     }
-    // --- ESTADO: GAME OVER ---
+    
+   // --- ESTADO: GAME OVER ---
     else if (g.state == GameState::GAME_OVER)
     {
-        // Fundo 3D congelado
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
         drawWorld3D();
 
-        // OVERLAY DO MELT por cima do jogo
-        // menuMeltRenderOverlay(janelaW, janelaH, g.time);
-
-        // Tela do game over por cima (com fogo)
-        menuRender(janelaW, janelaH, g.time, "VOCE FOI INFECTADO", "Pressione ENTER para Tentar Novamente", g.r);
+        // 2. Tela de Sangue e Textos
+        gameOverRender(janelaW, janelaH, g.time, "VOCE FOI INFECTADO", "Pressione ENTER para Tentar Novamente");
     }
+
     // --- ESTADO: PAUSADO ---
     else if (g.state == GameState::PAUSADO)
     {
@@ -318,17 +366,69 @@ void gameRender()
         // 3) Menu escuro por cima
         pauseMenuRender(janelaW, janelaH, g.time);
     }
-    // --- ESTADO: JOGANDO ---
-    else // JOGANDO
+
+    else if (g.state == GameState::VICTORY)
     {
-        // 1) Mundo 3D
-        drawWorld3D();
-
-        // 2) HUD completo
-        hudRenderAll(janelaW, janelaH, gHudTex, hs, true, true, true);
-
-        menuMeltRenderOverlay(janelaW, janelaH, g.time);
+        // Limpa a tela e desenha o fundo de vitória
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        victoryRender(janelaW, janelaH, g.time);
     }
 
+    // --- ESTADO: JOGANDO ---
+else // JOGANDO
+    {
+        drawWorld3D();
+        
+        // Desenha a arma e o HUD normal
+        hudRenderAll(janelaW, janelaH, gHudTex, hs, true, true, true);
+
+        // ===============================================
+        // SHADER DE DANO PULSANTE (VIDA <= 30)
+        // ===============================================
+        if (g.player.health <= 30 && g.r.progDano > 0) {
+            
+            glUseProgram(g.r.progDano);
+            glUniform1f(glGetUniformLocation(g.r.progDano, "uTime"), g.time);
+            
+            // Salva o estado do OpenGL e desliga o que atrapalha o 2D
+            glPushAttrib(GL_ALL_ATTRIB_BITS);
+            glDisable(GL_DEPTH_TEST);
+            glDisable(GL_LIGHTING);
+            glDisable(GL_TEXTURE_2D);
+            glDisable(GL_FOG);
+            glDisable(GL_CULL_FACE); // <-- O herói que salva o shader!
+            
+            // Liga a transparência
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+            // Câmera 2D (0 a 1)
+            glMatrixMode(GL_PROJECTION);
+            glPushMatrix();
+            glLoadIdentity();
+            gluOrtho2D(0, 1, 1, 0); 
+            glMatrixMode(GL_MODELVIEW);
+            glPushMatrix();
+            glLoadIdentity();
+            
+            // Desenha o quadrado invisível onde o shader vai agir
+            glBegin(GL_QUADS);
+                glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, 0.0f);
+                glTexCoord2f(1.0f, 1.0f); glVertex2f(1.0f, 0.0f);
+                glTexCoord2f(1.0f, 0.0f); glVertex2f(1.0f, 1.0f);
+                glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 1.0f);
+            glEnd();
+            
+            // Restaura as matrizes e atributos
+            glPopMatrix();
+            glMatrixMode(GL_PROJECTION);
+            glPopMatrix();
+            glMatrixMode(GL_MODELVIEW);
+            
+            glPopAttrib();
+            glUseProgram(0);
+        }
+    }
+    
     glutSwapBuffers();
 }
