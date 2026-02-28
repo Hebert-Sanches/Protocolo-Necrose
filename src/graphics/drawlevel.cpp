@@ -7,9 +7,7 @@
 #include "utils/utils.h"
 #include <cstdio>
 
-// =====================
 // CONFIG / CONSTANTES
-// =====================
 static const float TILE = 4.0f;
 static const float CEILING_H = 4.0f;
 static const float WALL_H = 4.0f;
@@ -196,9 +194,8 @@ static void desenhaParedeCuboCompleto(float x, float z, GLuint texParedeX)
     glEnd();
 }
 
-// ==========================================
 // FUNÇÕES NOVAS PARA DESENHAR A PORTA (SEM REPETIR TEXTURA)
-// ==========================================
+
 static void desenhaPortaPorFace(float x, float z, GLuint texPortaX, int f)
 {
     float half = TILE * 0.5f;
@@ -260,7 +257,6 @@ static void desenhaPortaCuboCompleto(float x, float z, GLuint texPortaX)
     glTexCoord2f(0.0f, 1.0f); glVertex3f(x - half, WALL_H, z - half);
     glEnd();
 }
-// ==========================================
 
 static void desenhaTileLava(float x, float z, const RenderAssets &r, float time)
 {

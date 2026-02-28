@@ -2,7 +2,6 @@
 #include "core/config.h" 
 #include <cstdio>
 
-// Configurações básicas para spawn
 static const float ENEMY_START_HP = 100.0f;
 
 bool loadLevel(Level &lvl, const char *mapPath, float tileSize)
@@ -16,7 +15,6 @@ bool loadLevel(Level &lvl, const char *mapPath, float tileSize)
 
     lvl.metrics = LevelMetrics::fromMap(lvl.map, tileSize);
     
-    // Limpa entidades antigas se houver
     lvl.enemies.clear();
     lvl.items.clear();
 
@@ -35,7 +33,7 @@ bool loadLevel(Level &lvl, const char *mapPath, float tileSize)
             lvl.metrics.tileCenter(x, z, wx, wz);
 
             // --- ALTERAÇÃO AQUI: Lógica para múltiplos inimigos (E, F, G) ---
-            int enemyType = -1; // -1 significa "não é inimigo"
+            int enemyType = -1; 
 
             if (c == 'J') enemyType = 0;      // Inimigo Tipo 1
             else if (c == 'T') enemyType = 1; // Inimigo Tipo 2 
@@ -43,15 +41,15 @@ bool loadLevel(Level &lvl, const char *mapPath, float tileSize)
             else if (c == 'G') enemyType = 3; // Inimigo Tipo 4
             else if (c == 'K') enemyType = 4; // Inimigo Tipo 5
 
-            if (enemyType != -1) // Se achou qualquer um dos inimigos
+            if (enemyType != -1) 
             {
                 Enemy e;
-                e.type = enemyType; // <--- IMPORTANTE: Define qual a skin dele (0, 1 ou 2)
+                e.type = enemyType; 
 
                 e.x = wx;
                 e.z = wz;
 
-                // NOVO: Salva a posição inicial e zera timer
+               
                 e.startX = wx; 
                 e.startZ = wz;
                 e.respawnTimer = 0.0f;
@@ -61,11 +59,11 @@ bool loadLevel(Level &lvl, const char *mapPath, float tileSize)
                 e.animFrame = 0;
                 e.animTimer = 0;
                 e.hurtTimer = 0.0f;
-                e.attackCooldown = 0.0f; // Garante que começa zerado
+                e.attackCooldown = 0.0f; 
 
                 lvl.enemies.push_back(e);
             }
-            // ----------------------------------------------------------------
+            
 
             else if (c == 'H') // Health Kit
             {

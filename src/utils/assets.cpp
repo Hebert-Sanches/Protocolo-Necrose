@@ -51,8 +51,7 @@ bool loadAssets(GameAssets &a)
     a.texEnemiesRage[3]   = carregaTextura("assets/enemies/zumbi_ataque.png");
     a.texEnemiesDamage[3] = carregaTextura("assets/enemies/zumbi_dano.png");
 
-    // Inimigo 4 (K) - O CHEFÃO DO MARTELO
-    // Repare que as imagens dele são .jpg! Cuidado para bater certinho com o arquivo.
+    // Inimigo 4 (K)
     a.texEnemies[4]       = carregaTextura("assets/enemies/zumbi_k_base.png");
     a.texEnemiesRage[4]   = carregaTextura("assets/enemies/zumbi_k_ataque.png");
     a.texEnemiesDamage[4] = carregaTextura("assets/enemies/zumbi_k_dano.png");
@@ -76,7 +75,6 @@ bool loadAssets(GameAssets &a)
     a.texGunHUD = carregaTextura("assets/Shotgun.png");
     a.texHudFundo = carregaTextura("assets/088.png");
 
-// ---> CORREÇÃO: Tiramos a neblina e adicionamos o progDano e progMelt
     if (!a.texChao || !a.texParede || !a.texSangue || !a.texLava || !a.progSangue ||
         !a.progLava || !a.progMelt || !a.progDano || !a.texHealth || !a.texGunDefault || !a.texGunFire1 ||
         !a.texGunFire2 || !a.texSkydome || !a.texGunReload1 || !a.texGunReload2 ||

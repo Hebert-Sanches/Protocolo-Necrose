@@ -15,9 +15,9 @@ struct GameAssets
     GLuint texParedeInterna = 0;
     GLuint texTeto = 0;
     GLuint texEnemy = 0;
-    GLuint texEnemyRage = 0;    // Viu o player
-    GLuint texEnemyDamage = 0;  // Leva dano
-    GLuint texHealthOverlay = 0; // Tela de cura
+    GLuint texEnemyRage = 0;    
+    GLuint texEnemyDamage = 0;  
+    GLuint texHealthOverlay = 0; 
     GLuint texHealth = 0;
     GLuint texAmmo = 0;
     GLuint texPorta = 0;

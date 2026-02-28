@@ -5,7 +5,7 @@
 #include "core/entities.h"
 #include <vector>
 
-struct RenderAssets; // forward decl (vem de core/game_state.h)
+struct RenderAssets; 
 
 void drawLevel(const MapLoader &map, float px, float pz, float dx, float dz, const RenderAssets &r, float time, int nivelAtual);
 

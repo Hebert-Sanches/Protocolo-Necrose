@@ -6,7 +6,7 @@
 #include "input/keystate.h"
 #include "core/window.h"
 #include "graphics/menu.h"
-#include "core/game.h" // Adicione isso no topo
+#include "core/game.h" 
 
 void keyboard(unsigned char key, int, int)
 {
@@ -20,7 +20,7 @@ void keyboard(unsigned char key, int, int)
     {
         if (key == 13)
         {
-            if (!menuMeltIsActive()) // evita recomeçar toda hora
+            if (!menuMeltIsActive()) 
                 menuMeltRequestStart();
         }
         return;

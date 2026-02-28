@@ -104,12 +104,10 @@ void updateEntities(float dt)
         }
     }
 
-    // 2. ATUALIZAÇÃO DOS ITENS (COLETA)
     for (auto& item : lvl.items)
     {
         if (!item.active)
         {
-            // Respawn de itens de cura/bala no mapa (ajustado para demorar mais)
             item.respawnTimer -= dt;
             if (item.respawnTimer <= 0.0f) item.active = true;
             continue;
@@ -122,9 +120,9 @@ void updateEntities(float dt)
         {
             if (item.type == ITEM_HEALTH)
             {
-                if (g.player.health < 100) { // Só pega se estiver ferido
+                if (g.player.health < 100) { 
                     item.active = false;
-                    item.respawnTimer = 45.0f; // Demora 45s para reaparecer
+                    item.respawnTimer = 45.0f; 
                     g.player.health += 50;
                     if (g.player.health > 100) g.player.health = 100;
                     g.player.healthAlpha = 1.0f;
@@ -132,17 +130,17 @@ void updateEntities(float dt)
             }
             else if (item.type == ITEM_AMMO)
             {
-                // Só pega munição se não estiver com a reserva cheia (ex: 30 balas)
+                
                 if (g.player.reserveAmmo < 30) {
                     item.active = false;
-                    item.respawnTimer = 60.0f; // Munição demora 1 minuto para voltar
-                    g.player.reserveAmmo += 10; // Soma 10 em vez de fixar em 20
+                    item.respawnTimer = 60.0f; 
+                    g.player.reserveAmmo += 10; 
                 }
             }
             else if (item.type == ITEM_CARTAO)
             {
                 item.active = false;
-                item.respawnTimer = 999999.0f; // Cartão nunca volta
+                item.respawnTimer = 999999.0f; 
                 g.player.temCartao = true;
             } 
         } 

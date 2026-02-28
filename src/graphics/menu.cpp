@@ -124,8 +124,6 @@ static void meltRenderFullscreen(int w, int h)
     glEnable(GL_TEXTURE_2D);
     glColor4f(1, 1, 1, 1);
 
-    // IMPORTANT: captura via glCopyTexSubImage2D costuma vir invertida em Y
-    // então invertimos aqui como você fez no fundo do menu
     glBegin(GL_QUADS);
     glTexCoord2f(0, 1);
     glVertex2f(0, 0);
@@ -174,7 +172,7 @@ static void meltStartNow(int w, int h)
         g_melt.xRes = 1;
 
     for (int i = 0; i < g_melt.xRes; ++i)
-        g_melt.offsets[i] = frand(1.0f, 2.0f); // offsets base (igual Godot-ish)
+        g_melt.offsets[i] = frand(1.0f, 2.0f); 
 
     g_melt.timer = 0.0f;
     g_melt.active = true;
@@ -195,15 +193,12 @@ void menuMeltRenderOverlay(int screenW, int screenH, float tempo)
         return;
     }
 
-    // desenha por cima de qualquer render (jogo)
     glPushAttrib(GL_ALL_ATTRIB_BITS);
 
     begin2D(screenW, screenH);
 
     meltUpdateFromTempo(tempo);
 
-    // precisa do discard aparecer (buracos): não precisa blend,
-    // mas se quiser alpha, habilite blend
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -337,8 +332,8 @@ void menuRender(int screenW, int screenH, float tempo,
     {
         g_melt.requested = false;
 
-        meltStartNow(screenW, screenH); // captura o menu desenhado
-        g_melt.lastTempo = -1.0f;       // reseta dt do overlay
+        meltStartNow(screenW, screenH); 
+        g_melt.lastTempo = -1.0f;       
 
         // entra no jogo NO PRÓXIMO FRAME
         gameSetState(GameState::JOGANDO);
@@ -469,14 +464,11 @@ void gameOverRender(int w, int h, float time, const char* titulo, const char* su
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_LIGHTING);
     glDisable(GL_FOG);
-    glDisable(GL_CULL_FACE); // O GRANDE CULPADO ESTAVA AQUI!
+    glDisable(GL_CULL_FACE); 
 
-    // Usa a sua própria função de câmera 2D
     begin2D(w, h);
 
-    // ==========================================
     // 2. FILTRO DE SANGUE (Agora vai funcionar!)
-    // ==========================================
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
@@ -490,9 +482,7 @@ void gameOverRender(int w, int h, float time, const char* titulo, const char* su
     
     glDisable(GL_BLEND);
 
-    // ==========================================
     // 3. TEXTOS COM SOMBRA 
-    // ========================================
     
     // Calcula a largura exata do TÍTULO em pixels
     int lenTitulo = strlen(titulo);
@@ -554,7 +544,7 @@ void victoryRender(int w, int h, float time) {
     // Fundo escuro total
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glColor4f(0.0f, 0.05f, 0.0f, 0.95f); // Um tom quase preto com um toque de verde
+    glColor4f(0.0f, 0.05f, 0.0f, 0.95f); 
     glBegin(GL_QUADS);
         glVertex2f(0, 0);
         glVertex2f((float)w, 0);

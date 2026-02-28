@@ -9,18 +9,16 @@ extern ParticleSystem gBloodParticles;
 
 constexpr int MAX_MAGAZINE = 12;
 
-// Ajuste fino: raio do hitbox do inimigo no chão (mundo XZ)
 static constexpr float HIT_RADIUS = 0.55f;
 
-// Ajuste fino: alcance máximo do tiro no mundo
 static constexpr float MAX_RANGE  = 17.0f;
 
 static bool rayCircleIntersectXZ(
-    float ox, float oz,     // origem do raio
-    float dx, float dz,     // direção NORMALIZADA
-    float cx, float cz,     // centro do inimigo
-    float r,                // raio da hitbox
-    float &outT             // distância ao longo do raio
+    float ox, float oz,     
+    float dx, float dz,     
+    float cx, float cz,     
+    float r,                
+    float &outT             
 )
 {
     // vetor da origem até o centro
