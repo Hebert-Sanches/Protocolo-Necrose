@@ -118,18 +118,24 @@ static void desenhaQuadChao(float x, float z, float tile, float tilesUV)
     glEnd();
 }
 
-static void desenhaTileChao(float x, float z, const RenderAssets &r)
+static void desenhaTileChao(float x, float z, const RenderAssets &r, int nivelAtual)
 {   
     glUseProgram(0);
     glColor3f(1, 1, 1);
-
     glActiveTexture(GL_TEXTURE0);
     
-    glBindTexture(GL_TEXTURE_2D, r.texChao);
+    if (nivelAtual == 2) {
+        glBindTexture(GL_TEXTURE_2D, r.texChaoFloresta); 
+    } else {
+        glBindTexture(GL_TEXTURE_2D, r.texChao);      
+    }
+    
     desenhaQuadChao(x, z, TILE, 2.0f);
 
-    glBindTexture(GL_TEXTURE_2D, r.texTeto);
-    desenhaQuadTeto(x, z, TILE, 2.0f);
+    if (nivelAtual != 2) {
+        glBindTexture(GL_TEXTURE_2D, r.texTeto);
+        desenhaQuadTeto(x, z, TILE, 2.0f);
+    }
 }
 
 static void desenhaParedePorFace(float x, float z, GLuint texParedeX, int f)
@@ -322,7 +328,7 @@ static void drawFace(float wx, float wz, int face, char neighbor, GLuint texPare
     }
 }
 
-void drawLevel(const MapLoader &map, float px, float pz, float dx, float dz, const RenderAssets &r, float time)
+void drawLevel(const MapLoader &map, float px, float pz, float dx, float dz, const RenderAssets &r, float time, int nivelAtual)
 {
     const auto &data = map.data();
     const int H = map.getHeight();
@@ -343,29 +349,25 @@ void drawLevel(const MapLoader &map, float px, float pz, float dx, float dz, con
                              c == 'G' || c == 'H' || c == 'A' || c == 'E' ||
                              c == 'F' || c == 'I');
 
-            if (isEntity || c == '0' || c == '3')
+            // --- INÍCIO DAS ALTERAÇÕES DO MAPA 2 ---
+            
+           if (isEntity || c == '0')
             {
-                desenhaTileChao(wx, wz, r);
+                // A própria função já sabe trocar o chão se for o nível 2!
+                desenhaTileChao(wx, wz, r, nivelAtual); 
             }
             else if (c == '1')
             {
-                desenhaParedeCuboCompleto(wx, wz, r.texParede);
+                // --- LÓGICA DE TEMAS PARA AS PAREDES ---
+                if (nivelAtual == 2) {
+                    desenhaParedeCuboCompleto(wx, wz, r.texParedeFloresta);
+                } else {
+                    desenhaParedeCuboCompleto(wx, wz, r.texParede);
+                }
             }
             else if (c == 'P')
             {
-                // AQUI FOI CORRIGIDO: Agora usa a função nova da porta!
                 desenhaPortaCuboCompleto(wx, wz, r.texPorta); 
-            }
-            else if (c == '2')
-            {
-                char vizFrente = getTileAt(map, x, z + 1);
-                char vizTras = getTileAt(map, x, z - 1);
-                char vizDireita = getTileAt(map, x + 1, z);
-                char vizEsq = getTileAt(map, x - 1, z);
-                drawFace(wx, wz, 0, vizFrente, r.texParedeInterna, time);
-                drawFace(wx, wz, 1, vizTras, r.texParedeInterna, time);
-                drawFace(wx, wz, 2, vizDireita, r.texParedeInterna, time);
-                drawFace(wx, wz, 3, vizEsq, r.texParedeInterna, time);
             }
             else if (c == 'L')
             {
@@ -375,6 +377,7 @@ void drawLevel(const MapLoader &map, float px, float pz, float dx, float dz, con
             {
                 desenhaTileSangue(wx, wz, r, time);
             }
+            // --- FIM DAS ALTERAÇÕES ---
         }
     }
     glUseProgram(0);

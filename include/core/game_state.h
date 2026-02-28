@@ -23,7 +23,7 @@ struct WeaponAnim
 
 struct RenderAssets
 {
-    GLuint texChao = 0, texParede = 0, texSangue = 0, texLava = 0;
+    GLuint texChao = 0, texParede = 0, texSangue = 0, texLava = 0, texParedeFloresta = 0, texChaoFloresta = 0;
     GLuint texChaoInterno = 0, texParedeInterna = 0, texTeto = 0, texSkydome = 0, texMenuBG = 0;
     // GLuint texSkydome=0;
 
@@ -51,6 +51,8 @@ struct GameContext
     PlayerState player;
     WeaponAnim weapon;
     float time = 0.0f;
+    
+    int nivelAtual = 1; 
 
     RenderAssets r;
 };

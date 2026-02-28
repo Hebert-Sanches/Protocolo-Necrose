@@ -14,6 +14,9 @@ bool loadAssets(GameAssets &a)
     a.texChaoInterno = carregaTextura("assets/chao_sujo.png"); 
     a.texParedeInterna = carregaTextura("assets/parede_suja.png"); 
     a.texTeto = carregaTextura("assets/teto_sujo.png");
+    a.texParedeFloresta = carregaTextura("assets/Parede_Floresta.png");
+    a.texChaoFloresta   = carregaTextura("assets/Chao_Floresta.png");
+
 
     // Compilando os shaders
     a.progSangue = criaShader("shaders/blood.vert", "shaders/blood.frag");
@@ -57,7 +60,7 @@ bool loadAssets(GameAssets &a)
     a.texAmmo = carregaTextura("assets/066.png");
     a.texCartao = carregaTextura("assets/cartao.png");
 
-    a.texSkydome = carregaTextura("assets/Va4wUMQ.png");
+    a.texSkydome = carregaTextura("assets/ceu_sombrio.png");
     a.texPorta = carregaTextura("assets/Porta.png");
 
     a.texGunHUD = carregaTextura("assets/Shotgun.png");

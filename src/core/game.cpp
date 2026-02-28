@@ -95,6 +95,9 @@ bool gameInit(const char *mapPath)
     g.r.texParedeInterna = gAssets.texParedeInterna;
     g.r.texTeto = gAssets.texTeto;
 
+    g.r.texParedeFloresta = gAssets.texParedeFloresta;
+    g.r.texChaoFloresta   = gAssets.texChaoFloresta;
+
     g.r.texPorta = gAssets.texPorta;
 
     g.r.texSkydome = gAssets.texSkydome;
@@ -169,6 +172,8 @@ void gameReset()
     g.player.healthAlpha = 0.0f;
 
     g.player.temCartao = false;
+    
+    g.nivelAtual = 1; // <-- ADICIONE ESTA LINHA PARA VOLTAR PRO MAPA 1 SE MORRER!
 
     g.weapon.state = WeaponState::W_IDLE;
     g.weapon.timer = 0.0f;
@@ -249,19 +254,19 @@ void gameUpdate(float dt)
         if (encostouNaPorta) {
             if (g.player.temCartao) {
                 g.player.temCartao = false; 
-                g_nivelAtual++; // Avança para o próximo nível
+                g.nivelAtual++; // <-- TROCAMOS PARA g.nivelAtual AQUI
 
-            if (g_nivelAtual == 2) {
+            if (g.nivelAtual == 2) { // <-- AQUI TAMBÉM
                 // Carrega o Mapa 2
                 loadLevel(gLevel, "maps/map2.txt", gLevel.metrics.tile);
                 applySpawn(gLevel, camX, camZ); 
             } 
-            else if (g_nivelAtual == 3) {
+            else if (g.nivelAtual == 3) { // <-- AQUI TAMBÉM
                 // Carrega o Mapa 3
                 loadLevel(gLevel, "maps/map3.txt", gLevel.metrics.tile);
                 applySpawn(gLevel, camX, camZ); 
             } 
-            else if (g_nivelAtual > 3) {
+            else if (g.nivelAtual > 3) { // <-- AQUI TAMBÉM
                 // Zerou o jogo!
                 g.state = GameState::VICTORY;
             }
@@ -276,7 +281,6 @@ void gameUpdate(float dt)
     }
 }
 
-// Função auxiliar para desenhar o mundo 3D (Inimigos, Mapa, Céu)
 void drawWorld3D()
 {
     glMatrixMode(GL_MODELVIEW);
@@ -288,12 +292,27 @@ void drawWorld3D()
 
     glEnable(GL_FOG);
     glFogi(GL_FOG_MODE, GL_LINEAR);
-    GLfloat corNeblina[4] = {0.02f, 0.02f, 0.02f, 1.0f}; // Quase preto absoluto
-    glFogfv(GL_FOG_COLOR, corNeblina);
     
-    // Ajuste as distâncias do terror aqui:
-    glFogf(GL_FOG_START, 3.0f);  // Lanterna ilumina bem até 3 blocos
-    glFogf(GL_FOG_END, 20.0f);   // Escuridão total a 20 blocos de distância
+    // ==========================================
+    // CONTROLE DE AMBIENTAÇÃO POR FASE
+    // ==========================================
+    if (g.nivelAtual == 2) {
+        // FLORESTA: Céu aberto e neblina verde musgo densa
+        GLfloat corNeblinaFloresta[4] = {0.12f, 0.16f, 0.12f, 1.0f}; 
+        glClearColor(0.12f, 0.16f, 0.12f, 1.0f); // O fundo da tela DEVE ser igual à neblina
+        glFogfv(GL_FOG_COLOR, corNeblinaFloresta);
+        
+        glFogf(GL_FOG_START, 2.0f);  // A neblina começa super perto
+        glFogf(GL_FOG_END, 18.0f);   // Não dá para ver nada muito longe
+    } else {
+        // HOSPITAL (Mapas 1 e 3): Teto fechado e escuridão
+        GLfloat corNeblinaNormal[4] = {0.02f, 0.02f, 0.02f, 1.0f}; 
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
+        glFogfv(GL_FOG_COLOR, corNeblinaNormal);
+        
+        glFogf(GL_FOG_START, 3.0f);  
+        glFogf(GL_FOG_END, 20.0f);   
+    }
 
     float radYaw = yaw * 3.14159265f / 180.0f;
     float radPitch = pitch * 3.14159265f / 180.0f;
@@ -304,6 +323,10 @@ void drawWorld3D()
 
     setSunDirectionEachFrame();
 
+    if (g.nivelAtual == 2) {
+        drawSkydome(camX, camY, camZ, g.r);
+    }
+
     if (g.r.progLava > 0) {
         glUseProgram(g.r.progLava);
         glUniform1f(locLavaTime, g.time);
@@ -312,10 +335,11 @@ void drawWorld3D()
         glUseProgram(g.r.progSangue);
         glUniform1f(locBloodTime, g.time);
     }
-    
     glUseProgram(0); 
 
-    drawLevel(gLevel.map, camX, camZ, dirX, dirZ, g.r, g.time);
+    // NÃO ESQUEÇA DE PASSAR O g.nivelAtual AQUI!
+    drawLevel(gLevel.map, camX, camZ, dirX, dirZ, g.r, g.time, g.nivelAtual);
+    
     drawEntities(gLevel.enemies, gLevel.items, camX, camZ, dirX, dirZ, g.r);
     gBloodParticles.draw(camX, camZ); 
     

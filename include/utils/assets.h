@@ -7,6 +7,8 @@ struct GameAssets
     GLuint texMenuBG = 0;
     GLuint texChao = 0;
     GLuint texParede = 0;
+    GLuint texParedeFloresta = 0;
+    GLuint texChaoFloresta = 0;
     GLuint texSangue = 0;
     GLuint texLava = 0;
     GLuint texChaoInterno = 0;
