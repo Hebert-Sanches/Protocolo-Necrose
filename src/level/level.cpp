@@ -21,15 +21,6 @@ bool loadLevel(Level &lvl, const char *mapPath, float tileSize)
     lvl.items.clear();
 
     // 2. Escaneia o mapa procurando Entidades (E, H, etc)
-    // Precisamos acessar os dados brutos do MapLoader como referência mudável
-    // Para isso, vamos assumir que podemos modificar o mapData ou fazemos uma varredura
-    // Como o MapLoader::data() retorna const, vamos ter que ser criativos ou 
-    // alterar o MapLoader. Mas vamos fazer a logica de posicao aqui.
-    
-    // Nota: O ideal seria o MapLoader permitir edição, mas vamos iterar cópia
-    // Na verdade, o MapLoader guarda strings. Vamos trapacear um pouco:
-    // O MapLoader não expõe escrita. Então vamos ler, criar a entidade, e na hora
-    // de desenhar/colidir, tratamos E e H como chão (0).
     
     const auto& data = lvl.map.data();
     int H = lvl.map.getHeight();

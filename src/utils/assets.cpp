@@ -24,29 +24,39 @@ bool loadAssets(GameAssets &a)
     a.progMelt = criaShader("shaders/melt.vert", "shaders/melt.frag");
     a.progDano = criaShader("shaders/damage.vert", "shaders/damage.frag");
 
-    // --- TODOS OS INIMIGOS AGORA SÃO ZUMBIS ---
     for (int i = 0; i < 5; i++)
     {
         a.texEnemies[i] = carregaTextura("assets/enemies/zumbi_base.png");
         a.texEnemiesRage[i] = carregaTextura("assets/enemies/zumbi_ataque.png");
         a.texEnemiesDamage[i] = carregaTextura("assets/enemies/zumbi_dano.png");
-
-        a.texEnemies[0]       = carregaTextura("assets/enemies/zumbi_j_base.png");
-        a.texEnemiesRage[0]   = carregaTextura("assets/enemies/zumbi_j_ataque.png");
-        a.texEnemiesDamage[0] = carregaTextura("assets/enemies/zumbi_j_dano.png");
-
-        a.texEnemies[1]       = carregaTextura("assets/enemies/zumbi_t_base.png");
-        a.texEnemiesRage[1]   = carregaTextura("assets/enemies/zumbi_t_ataque.png");
-        a.texEnemiesDamage[1] = carregaTextura("assets/enemies/zumbi_t_dano.png");
-
-        a.texEnemies[2]       = carregaTextura("assets/enemies/zumbi_m_base.png");
-        a.texEnemiesRage[2]   = carregaTextura("assets/enemies/zumbi_m_ataque.png");
-        a.texEnemiesDamage[2] = carregaTextura("assets/enemies/zumbi_m_dano.png");
-
-        a.texEnemies[3]       = carregaTextura("assets/enemies/zumbi_k_base.png");
-        a.texEnemiesRage[3]   = carregaTextura("assets/enemies/zumbi_k_ataque.png");
-        a.texEnemiesDamage[3] = carregaTextura("assets/enemies/zumbi_k_dano.png");
     }
+    
+    // Inimigo 0 (J)
+    a.texEnemies[0]       = carregaTextura("assets/enemies/zumbi_j_base.png");
+    a.texEnemiesRage[0]   = carregaTextura("assets/enemies/zumbi_j_ataque.png");
+    a.texEnemiesDamage[0] = carregaTextura("assets/enemies/zumbi_j_dano.png");
+
+    // Inimigo 1 (T)
+    a.texEnemies[1]       = carregaTextura("assets/enemies/zumbi_t_base.png");
+    a.texEnemiesRage[1]   = carregaTextura("assets/enemies/zumbi_t_ataque.png");
+    a.texEnemiesDamage[1] = carregaTextura("assets/enemies/zumbi_t_dano.png");
+
+    // Inimigo 2 (M)
+    a.texEnemies[2]       = carregaTextura("assets/enemies/zumbi_m_base.png");
+    a.texEnemiesRage[2]   = carregaTextura("assets/enemies/zumbi_m_ataque.png");
+    a.texEnemiesDamage[2] = carregaTextura("assets/enemies/zumbi_m_dano.png");
+
+    // Inimigo 3 (G) - O ZUMBI MÉDICO (que você mandou agora!)
+    a.texEnemies[3]       = carregaTextura("assets/enemies/zumbi_base.png");
+    a.texEnemiesRage[3]   = carregaTextura("assets/enemies/zumbi_ataque.png");
+    a.texEnemiesDamage[3] = carregaTextura("assets/enemies/zumbi_dano.png");
+
+    // Inimigo 4 (K) - O CHEFÃO DO MARTELO
+    // Repare que as imagens dele são .jpg! Cuidado para bater certinho com o arquivo.
+    a.texEnemies[4]       = carregaTextura("assets/enemies/zumbi_k_base.png");
+    a.texEnemiesRage[4]   = carregaTextura("assets/enemies/zumbi_k_ataque.png");
+    a.texEnemiesDamage[4] = carregaTextura("assets/enemies/zumbi_k_dano.png");
+    
 
     a.texHealthOverlay = carregaTextura("assets/heal.png");
     a.texGunDefault = carregaTextura("assets/gun_default.png");

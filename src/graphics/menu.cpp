@@ -564,7 +564,7 @@ void victoryRender(int w, int h, float time) {
     glDisable(GL_BLEND);
 
     const char* titulo = "PROTOCOLO CONCLUIDO";
-    const char* subtitulo = "A infeccao foi contida.";
+    const char* subtitulo = "Voce conseguiu fugir da INFECCAO!";
 
     // Calcula larguras para centralizar
     int lenTitulo = strlen(titulo);

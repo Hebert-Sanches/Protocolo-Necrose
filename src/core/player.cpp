@@ -139,23 +139,25 @@ void playerTryAttack()
 if (en.hp <= 0)
         {
             en.state = STATE_DEAD;
-            en.respawnTimer = 15.0f;
-
-            Item drop;
             
-            // NOVO: Se o tipo for 2 ('M') OU tipo for 3 ('G'), dropa o cartão!
-            if (en.type == 2) {
-                drop.type = ITEM_CARTAO;
+            if (en.type == 4) {
+                en.respawnTimer = 60.0f; // Boss 'K' demora 1 minuto
             } else {
-                drop.type = ITEM_AMMO; // Os outros (J, T, K) dropam munição
+                en.respawnTimer = 15.0f; // Normais demoram 15s
+            }
+
+            if (en.type == 2) 
+            {
+                Item drop;
+                drop.type = ITEM_CARTAO;
+                drop.x = en.x;
+                drop.z = en.z;
+                drop.active = true;
+                drop.respawnTimer = 0.0f;
+
+                lvl.items.push_back(drop);
             }
             
-            drop.x = en.x;
-            drop.z = en.z;
-            drop.active = true;
-            drop.respawnTimer = 0.0f;
-
-            lvl.items.push_back(drop);
         }
     }
 }

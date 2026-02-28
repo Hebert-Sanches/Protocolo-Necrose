@@ -101,9 +101,6 @@ void updateEntities(float dt)
                 }
             }
             break;
-
-        default:
-            break;
         }
     }
 
@@ -112,6 +109,7 @@ void updateEntities(float dt)
     {
         if (!item.active)
         {
+            // Respawn de itens de cura/bala no mapa (ajustado para demorar mais)
             item.respawnTimer -= dt;
             if (item.respawnTimer <= 0.0f) item.active = true;
             continue;
@@ -122,23 +120,29 @@ void updateEntities(float dt)
 
         if (dx * dx + dz * dz < 1.0f)
         {
-            item.active = false;
-
             if (item.type == ITEM_HEALTH)
             {
-                item.respawnTimer = 15.0f;
-                g.player.health += 50;
-                if (g.player.health > 100) g.player.health = 100;
-                g.player.healthAlpha = 1.0f;
+                if (g.player.health < 100) { // Só pega se estiver ferido
+                    item.active = false;
+                    item.respawnTimer = 45.0f; // Demora 45s para reaparecer
+                    g.player.health += 50;
+                    if (g.player.health > 100) g.player.health = 100;
+                    g.player.healthAlpha = 1.0f;
+                }
             }
             else if (item.type == ITEM_AMMO)
             {
-                item.respawnTimer = 999999.0f;
-                g.player.reserveAmmo = 20;
+                // Só pega munição se não estiver com a reserva cheia (ex: 30 balas)
+                if (g.player.reserveAmmo < 30) {
+                    item.active = false;
+                    item.respawnTimer = 60.0f; // Munição demora 1 minuto para voltar
+                    g.player.reserveAmmo += 10; // Soma 10 em vez de fixar em 20
+                }
             }
             else if (item.type == ITEM_CARTAO)
             {
-                item.respawnTimer = 999999.0f;
+                item.active = false;
+                item.respawnTimer = 999999.0f; // Cartão nunca volta
                 g.player.temCartao = true;
             } 
         } 

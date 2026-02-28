@@ -252,26 +252,27 @@ void gameUpdate(float dt)
     }
 
         if (encostouNaPorta) {
-            if (g.player.temCartao) {
-                g.player.temCartao = false; 
-                g.nivelAtual++; // <-- TROCAMOS PARA g.nivelAtual AQUI
+            // PORTA DESTRAVADA! Ignorando a checagem do cartão:
+            // if (g.player.temCartao) { 
+            
+            g.player.temCartao = false; 
+            g.nivelAtual++; 
 
-            if (g.nivelAtual == 2) { // <-- AQUI TAMBÉM
-                // Carrega o Mapa 2
+            if (g.nivelAtual == 2) { 
                 loadLevel(gLevel, "maps/map2.txt", gLevel.metrics.tile);
                 applySpawn(gLevel, camX, camZ); 
             } 
-            else if (g.nivelAtual == 3) { // <-- AQUI TAMBÉM
-                // Carrega o Mapa 3
+            else if (g.nivelAtual == 3) { 
                 loadLevel(gLevel, "maps/map3.txt", gLevel.metrics.tile);
                 applySpawn(gLevel, camX, camZ); 
             } 
-            else if (g.nivelAtual > 3) { // <-- AQUI TAMBÉM
-                // Zerou o jogo!
+            else if (g.nivelAtual > 3) { 
+                // ZEROU O JOGO!
                 g.state = GameState::VICTORY;
             }
-        } 
-    }
+            
+            // } <-- A chave que fechava o 'if' do cartão também foi comentada
+        }
 
     // 3. CHECAGEM DE GAME OVER
     if (g.player.health <= 0)
