@@ -46,7 +46,6 @@ static HudTextures gHudTex;
 static GameContext g;
 
 constexpr int MAX_MAGAZINE = 12;
-static int g_nivelAtual = 1; 
 
 // --- Assets / Level ---
 static GameAssets gAssets;
@@ -168,11 +167,12 @@ void gameReset()
     g.weapon.state = WeaponState::W_IDLE;
     g.weapon.timer = 0.0f;
 
-    if (g_nivelAtual == 1) {
+    // === CORREÇÃO: RECARREGA EXATAMENTE A FASE EM QUE VOCÊ MORREU ===
+    if (g.nivelAtual == 1) {
         loadLevel(gLevel, "maps/map1.txt", GameConfig::TILE_SIZE);
-    } else if (g_nivelAtual == 2) {
+    } else if (g.nivelAtual == 2) {
         loadLevel(gLevel, "maps/map2.txt", GameConfig::TILE_SIZE);
-    } else if (g_nivelAtual == 3) {
+    } else if (g.nivelAtual == 3) {
         loadLevel(gLevel, "maps/map3.txt", GameConfig::TILE_SIZE);
     }
 
@@ -250,24 +250,30 @@ void gameUpdate(float dt)
         }
     }
 
-        if (encostouNaPorta) {
-            
-            g.player.temCartao = false; 
-            g.nivelAtual++; 
+if (encostouNaPorta) {
+            // 1. VERIFICA SE TEM O CARTÃO 
+            if (g.player.temCartao) { 
+                
+                // 2. GASTA O CARTÃO! 
+                g.player.temCartao = false; 
+                
+                // 3. AVANÇA DE FASE
+                g.nivelAtual++; 
 
-            if (g.nivelAtual == 2) { 
-                loadLevel(gLevel, "maps/map2.txt", gLevel.metrics.tile);
-                applySpawn(gLevel, camX, camZ); 
+                if (g.nivelAtual == 2) { 
+                    loadLevel(gLevel, "maps/map2.txt", gLevel.metrics.tile);
+                    applySpawn(gLevel, camX, camZ); 
+                } 
+                else if (g.nivelAtual == 3) { 
+                    loadLevel(gLevel, "maps/map3.txt", gLevel.metrics.tile);
+                    applySpawn(gLevel, camX, camZ); 
+                } 
+                else if (g.nivelAtual > 3) { 
+                    // ZEROU O JOGO!
+                    g.state = GameState::VICTORY;
+                }
             } 
-            else if (g.nivelAtual == 3) { 
-                loadLevel(gLevel, "maps/map3.txt", gLevel.metrics.tile);
-                applySpawn(gLevel, camX, camZ); 
-            } 
-            else if (g.nivelAtual > 3) { 
-                // ZEROU O JOGO!
-                g.state = GameState::VICTORY;
-            }
-            
+           
         }
 
     if (g.player.health <= 0)

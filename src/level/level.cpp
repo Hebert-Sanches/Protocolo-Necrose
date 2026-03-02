@@ -50,11 +50,17 @@ bool loadLevel(Level &lvl, const char *mapPath, float tileSize)
                 e.z = wz;
 
                
-                e.startX = wx; 
+e.startX = wx; 
                 e.startZ = wz;
                 e.respawnTimer = 0.0f;
 
-                e.hp = ENEMY_START_HP;
+                // O CHEFÃO 
+                if (enemyType == 4) {
+                    e.hp = 300.0f; 
+                } else {
+                    e.hp = ENEMY_START_HP; // Os outros nascem com 100
+                }
+
                 e.state = STATE_IDLE;
                 e.animFrame = 0;
                 e.animTimer = 0;

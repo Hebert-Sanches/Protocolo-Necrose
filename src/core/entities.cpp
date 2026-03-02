@@ -94,8 +94,15 @@ void updateEntities(float dt)
                 en.attackCooldown -= dt;
                 if (en.attackCooldown <= 0.0f)
                 {
-                    g.player.health -= 10;
-                    en.attackCooldown = 1.0f;
+                    // === NOVO: DANO BASEADO NO TIPO DO INIMIGO ===
+                    if (en.type == 4) {
+                        g.player.health -= 35; // O Boss tira mais de um terço da sua vida!
+                        en.attackCooldown = 1.5f; // Ele bate forte, mas o golpe é mais lento
+                    } else {
+                        g.player.health -= 10; // Zumbis normais tiram 10
+                        en.attackCooldown = 1.0f; // Zumbis normais batem mais rápido
+                    }
+                    
                     g.player.damageAlpha = 1.0f;
                     audioPlayHurt(audio);
                 }
